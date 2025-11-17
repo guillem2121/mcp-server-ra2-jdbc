@@ -418,7 +418,51 @@ public class DatabaseUserServiceImpl implements DatabaseUserService {
 
     @Override
     public int batchInsertUsers(List<User> users) {
-        throw new UnsupportedOperationException("TODO: Método batchInsertUsers() para implementar por estudiantes");
+        //throw new UnsupportedOperationException("TODO: Método batchInsertUsers() para implementar por estudiantes");
+        Connection conn = null;
+        try{
+            //Obtenemos la conexión con la BBDD
+            conn = DatabaseConfig.getConnection();
+            //Desactivamos el AutoCommit
+            conn.setAutoCommit(false);
+            //Creamos nuestra consulta SQL
+            String sql = "INSERT INTO users (name, email, department, role, active, created_at, updated_at) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?)";
+            //Segundo bloque try
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                for (User user : users) {
+                    pstmt.setString(1, user.getName());
+                    pstmt.setString(2, user.getEmail());
+                    pstmt.setString(3, user.getDepartment());
+                    pstmt.setString(4, user.getRole());
+                    pstmt.setBoolean(5, user.getActive() != null ? user.getActive() : true);
+                    pstmt.setTimestamp(6, Timestamp.valueOf(
+                            user.getCreatedAt() != null ? user.getCreatedAt() : LocalDateTime.now()));
+                    pstmt.setTimestamp(7, Timestamp.valueOf(LocalDateTime.now()));
+                    pstmt.addBatch();
+                }
+                int[] updateCount = pstmt.executeBatch();
+                conn.commit();
+                int totalInserted = 0;
+                for (int count : updateCount) {
+                    if (count == Statement.SUCCESS_NO_INFO || count >= 0) {
+                        totalInserted++; // O podrías hacer totalInserted += count;
+                    }
+                }
+                if (totalInserted != users.size()) {
+                    System.err.println("Advertencia: El número de inserciones no coincide con el tamaño de la lista.");
+                }
+                return totalInserted;
+            }catch (SQLException e) {
+                // Si algo falla, hacemos rollback. El try-with-resources se encargará de cerrar pstmt.
+                System.err.println("Error en la transacción, ejecutando rollback...");
+                conn.rollback(); // El rollback también puede lanzar SQLException, por eso el anidamiento.
+                throw new RuntimeException("Error en la inserción por lotes: " + e.getMessage(), e);
+            }
+        } catch (SQLException e) {
+            // Este catch captura errores al obtener la conexión o al hacer rollback/commit/close.
+            throw new RuntimeException("Error de base de datos irrecuperable: " + e.getMessage(), e);
+        }
     }
 
     // ========== CE2.e: Metadata ==========
