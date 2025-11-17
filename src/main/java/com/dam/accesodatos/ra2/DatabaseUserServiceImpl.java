@@ -269,7 +269,24 @@ public class DatabaseUserServiceImpl implements DatabaseUserService {
 
     @Override
     public List<User> findAll() {
-        throw new UnsupportedOperationException("TODO: Método findAll() para implementar por estudiantes");
+        List<User> users = new ArrayList<>();
+        //IMPORTANTE MIRAR TEST: pide mostrar SOLO 3 usuarios usando la fecha de creación como dato->ORDER BY created_at DESC
+        String sql = "SELECT * FROM users ORDER BY created_at DESC";
+        try(Connection conn = DatabaseConfig.getConnection();
+        PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        ResultSet rs = pstmt.executeQuery();
+        while (rs.next()) {
+            User user = new User();
+            user.setId(rs.getLong("id"));
+            user.setName(rs.getString("name"));
+            user.setEmail(rs.getString("email"));
+            users.add(user);
+        }
+        }catch(SQLException e){
+            e.printStackTrace();
+            return List.of();
+        }
+        return users;
     }
 
     // ========== CE2.c: Advanced Queries ==========
