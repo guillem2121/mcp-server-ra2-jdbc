@@ -293,7 +293,26 @@ public class DatabaseUserServiceImpl implements DatabaseUserService {
 
     @Override
     public List<User> findUsersByDepartment(String department) {
-        throw new UnsupportedOperationException("TODO: Método findUsersByDepartment() para implementar por estudiantes");
+        //throw new UnsupportedOperationException("TODO: Método findUsersByDepartment() para implementar por estudiantes");
+        List<User> users = new ArrayList<>();
+        //Test nos pide buscar departamentos IT
+        String sql = "SELECT * FROM users WHERE department = 'IT' ";
+        try(Connection conn = DatabaseConfig.getConnection();
+        PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                User user = new User();
+                user.setId(rs.getLong("id"));
+                user.setName(rs.getString("name"));
+                user.setEmail(rs.getString("email"));
+                user.setDepartment(rs.getString("department"));
+                users.add(user);
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+            return List.of();
+        }
+        return users;
     }
 
     @Override
