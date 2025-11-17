@@ -317,7 +317,27 @@ public class DatabaseUserServiceImpl implements DatabaseUserService {
 
     @Override
     public List<User> searchUsers(UserQueryDto query) {
-        throw new UnsupportedOperationException("TODO: Método searchUsers() para implementar por estudiantes");
+        //throw new UnsupportedOperationException("TODO: Método searchUsers() para implementar por estudiantes");
+        List<User> users = new ArrayList<>();
+        //Buscar por departamento o activo
+        String sql = "SELECT * FROM users WHERE department LIKE ? or active LIKE ? LIMIT 10";
+        try(Connection conn = DatabaseConfig.getConnection();
+        PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                User user = new User();
+                user.setId(rs.getLong("id"));
+                user.setName(rs.getString("name"));
+                user.setEmail(rs.getString("email"));
+                user.setDepartment(rs.getString("department"));
+                user.setActive(rs.getBoolean("active"));
+                users.add(user);
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+            return List.of();
+        }
+        return users;
     }
 
 
