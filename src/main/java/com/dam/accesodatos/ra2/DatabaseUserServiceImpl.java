@@ -419,10 +419,8 @@ public class DatabaseUserServiceImpl implements DatabaseUserService {
     @Override
     public int batchInsertUsers(List<User> users) {
         //throw new UnsupportedOperationException("TODO: Método batchInsertUsers() para implementar por estudiantes");
-        Connection conn = null;
-        try{
-            //Obtenemos la conexión con la BBDD
-            conn = DatabaseConfig.getConnection();
+
+        try(Connection conn = DatabaseConfig.getConnection();){
             //Desactivamos el AutoCommit
             conn.setAutoCommit(false);
             //Creamos nuestra consulta SQL
