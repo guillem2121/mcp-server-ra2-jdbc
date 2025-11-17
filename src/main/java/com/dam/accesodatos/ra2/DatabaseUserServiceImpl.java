@@ -242,7 +242,29 @@ public class DatabaseUserServiceImpl implements DatabaseUserService {
 
     @Override
     public boolean deleteUser(Long id) {
-        throw new UnsupportedOperationException("TODO: Método deleteUser() para implementar por estudiantes");
+        //throw new UnsupportedOperationException("TODO: Método deleteUser() para implementar por estudiantes");
+        User existing = findUserById(id);
+        if (existing == null) {
+            throw new RuntimeException("No se encontró usuario con ID " + id);
+        }
+        // Construir DELETE statement
+        String sql = "DELETE FROM users WHERE id = ?";
+        //Creación del Try-With-Resources
+        try(Connection conn = DatabaseConfig.getConnection();
+        PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            //Aplicamos nustro parámetro "id" para ejecutar nuestra consulta delete
+            pstmt.setLong(1, id);
+            //Ejecutamos el DELETE
+            int affectedRows = pstmt.executeUpdate();
+            //Nos aseguramos de que DELETE esté funcionando sobre una línea existente
+            if (affectedRows == 0) {
+                throw new RuntimeException("Error: DELETE no afecta a ninguna fila");
+            }
+            return true;
+        } catch (SQLException e) {
+           e.printStackTrace();
+           return false;
+        }
     }
 
     @Override
