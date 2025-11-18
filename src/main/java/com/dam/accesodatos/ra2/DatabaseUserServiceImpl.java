@@ -444,7 +444,7 @@ public class DatabaseUserServiceImpl implements DatabaseUserService {
                 int totalInserted = 0;
                 for (int count : updateCount) {
                     if (count == Statement.SUCCESS_NO_INFO || count >= 0) {
-                        totalInserted++; // O podrías hacer totalInserted += count;
+                        totalInserted++;
                     }
                 }
                 if (totalInserted != users.size()) {
@@ -452,13 +452,11 @@ public class DatabaseUserServiceImpl implements DatabaseUserService {
                 }
                 return totalInserted;
             }catch (SQLException e) {
-                // Si algo falla, hacemos rollback. El try-with-resources se encargará de cerrar pstmt.
                 System.err.println("Error en la transacción, ejecutando rollback...");
-                conn.rollback(); // El rollback también puede lanzar SQLException, por eso el anidamiento.
+                conn.rollback();
                 throw new RuntimeException("Error en la inserción por lotes: " + e.getMessage(), e);
             }
         } catch (SQLException e) {
-            // Este catch captura errores al obtener la conexión o al hacer rollback/commit/close.
             throw new RuntimeException("Error de base de datos irrecuperable: " + e.getMessage(), e);
         }
     }
