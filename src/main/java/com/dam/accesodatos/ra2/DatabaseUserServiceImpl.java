@@ -534,7 +534,18 @@ public class DatabaseUserServiceImpl implements DatabaseUserService {
 
     @Override
     public int executeCountByDepartment(String department) {
-        throw new UnsupportedOperationException("TODO: Método executeCountByDepartment() para implementar por estudiantes");
+        String sql = "SELECT COUNT(*) FROM users WHERE department = ? AND active = TRUE";
+        try (Connection conn = DatabaseConfig.getConnection();
+        PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, department);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error al contar usuarios del departamento " + department, e);
+        }
+        return 0;
     }
 
     // ========== HELPER METHODS ==========
