@@ -503,7 +503,31 @@ public class DatabaseUserServiceImpl implements DatabaseUserService {
 
     @Override
     public List<Map<String, Object>> getTableColumns(String tableName) {
-        throw new UnsupportedOperationException("TODO: Método getTableColumns() para implementar por estudiantes");
+        List<Map<String, Object>> columns = new ArrayList<>();
+
+        try(Connection conn = DatabaseConfig.getConnection()){
+            DatabaseMetaData metaData = conn.getMetaData();
+
+            try (ResultSet rs = metaData.getColumns(null, null, tableName.toUpperCase(), null)) {
+
+                while (rs.next()) {
+                    Map<String, Object> columnInfo = new HashMap<>();
+
+                    columnInfo.put("name", rs.getString("COLUMN_NAME"));
+                    columnInfo.put("typeName", rs.getString("TYPE_NAME"));
+
+                    boolean isNullable = "YES".equalsIgnoreCase(rs.getString("IS_NULLABLE"));
+                    columnInfo.put("nullable", isNullable);
+
+                    columns.add(columnInfo);
+                }
+            }
+
+        }catch(SQLException e){
+            throw new RuntimeException("Error al obtener metadatos de la tabla " + tableName, e);
+        }
+
+        return columns;
     }
 
     // ========== CE2.f: Funciones de Agregación ==========
