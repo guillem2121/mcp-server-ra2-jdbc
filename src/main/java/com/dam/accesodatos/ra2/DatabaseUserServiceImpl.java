@@ -465,7 +465,40 @@ public class DatabaseUserServiceImpl implements DatabaseUserService {
 
     @Override
     public String getDatabaseInfo() {
-        throw new UnsupportedOperationException("TODO: Método getDatabaseInfo() para implementar por estudiantes");
+        //Creamos nuestra conexión a la BBDD
+        try(Connection conn = DatabaseConfig.getConnection();){
+            /*
+            * Que nos pide el Test:
+            * 1. La info no debe de ser NULL
+            * 2. Debe contener 'Base de Datos'
+            * 3. Debe contener 'H2'
+            * 4. Debe contener 'URL'
+            * 5. Debe contener 'Usuario'
+            * 6. Debe contener 'Soporta Batch'
+            * 7. Debe contener 'Soporta Transacciones'
+            */
+            DatabaseMetaData metaData = conn.getMetaData();
+            StringBuilder info = new StringBuilder();
+            //Nombre de la bbdd
+            info.append("Bases de Datos: " + metaData.getDatabaseProductName()).append("\n");
+            //Nombre del driver
+            info.append("Driver JDBC:: " + metaData.getDriverName()).append("\n");
+            //URL
+            info.append("URL: " + metaData.getURL()).append("\n");
+            //Mostar User
+            info.append("Usuario: " + metaData.getUserName()).append("\n");
+            //Soporta Batch?
+            String soportaBatch = metaData.supportsBatchUpdates() ? "SI" : "NO";
+            info.append("¿Soporta batch?: " + soportaBatch).append("\n");
+            //Soporta transacciones
+            String soportaTransacciones = metaData.supportsTransactions() ? "SI" : "NO";
+            info.append("¿Soporta transacciones?: " + soportaTransacciones).append("\n");
+
+            return info.toString();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "Error al obtener la información de la base de datos.";
+        }
     }
 
     @Override
