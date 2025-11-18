@@ -480,19 +480,19 @@ public class DatabaseUserServiceImpl implements DatabaseUserService {
             DatabaseMetaData metaData = conn.getMetaData();
             StringBuilder info = new StringBuilder();
             //Nombre de la bbdd
-            info.append("Bases de Datos: " + metaData.getDatabaseProductName()).append("\n");
+            info.append("Base de Datos: " + metaData.getDatabaseProductName()).append("\n");
             //Nombre del driver
-            info.append("Driver JDBC:: " + metaData.getDriverName()).append("\n");
+            info.append("Driver JDBC : " + metaData.getDriverName()).append("\n");
             //URL
-            info.append("URL: " + metaData.getURL()).append("\n");
+            info.append("URL : " + metaData.getURL()).append("\n");
             //Mostar User
-            info.append("Usuario: " + metaData.getUserName()).append("\n");
+            info.append("Usuario : " + metaData.getUserName()).append("\n");
             //Soporta Batch?
             String soportaBatch = metaData.supportsBatchUpdates() ? "SI" : "NO";
-            info.append("¿Soporta batch?: " + soportaBatch).append("\n");
+            info.append("Soporta Batch : " + soportaBatch).append("\n");
             //Soporta transacciones
             String soportaTransacciones = metaData.supportsTransactions() ? "SI" : "NO";
-            info.append("¿Soporta transacciones?: " + soportaTransacciones).append("\n");
+            info.append("Soporta Transacciones: " + soportaTransacciones).append("\n");
 
             return info.toString();
         } catch (SQLException e) {
