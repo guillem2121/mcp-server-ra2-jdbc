@@ -534,7 +534,7 @@ public class DatabaseUserServiceImpl implements DatabaseUserService {
 
     @Override
     public int executeCountByDepartment(String department) {
-        String sql = "SELECT COUNT(*) FROM users WHERE department = ? AND active = TRUE";
+        String sql = "SELECT COUNT(*) FROM users WHERE department = ?";
         try (Connection conn = DatabaseConfig.getConnection();
         PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, department);
