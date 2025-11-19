@@ -245,7 +245,7 @@ public class DatabaseUserServiceImpl implements DatabaseUserService {
         //throw new UnsupportedOperationException("TODO: Método deleteUser() para implementar por estudiantes");
         User existing = findUserById(id);
         if (existing == null) {
-            throw new RuntimeException("No se encontró usuario con ID " + id);
+            return false;
         }
         // Construir DELETE statement
         String sql = "DELETE FROM users WHERE id = ?";
@@ -258,7 +258,7 @@ public class DatabaseUserServiceImpl implements DatabaseUserService {
             int affectedRows = pstmt.executeUpdate();
             //Nos aseguramos de que DELETE esté funcionando sobre una línea existente
             if (affectedRows == 0) {
-                throw new RuntimeException("Error: DELETE no afecta a ninguna fila");
+                return false;
             }
             return true;
         } catch (SQLException e) {
@@ -298,6 +298,7 @@ public class DatabaseUserServiceImpl implements DatabaseUserService {
         String sql = "SELECT * FROM users WHERE department = ? AND ACTIVE = true ";
         try(Connection conn = DatabaseConfig.getConnection();
         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, department);
             ResultSet rs = pstmt.executeQuery();
             pstmt.setString(1, department);
             while (rs.next()) {
@@ -534,7 +535,7 @@ public class DatabaseUserServiceImpl implements DatabaseUserService {
 
     @Override
     public int executeCountByDepartment(String department) {
-        String sql = "SELECT COUNT(*) FROM users WHERE department = ?";
+        String sql = "SELECT COUNT(*) FROM users WHERE department = ? AND ACTIVE = true";
         try (Connection conn = DatabaseConfig.getConnection();
         PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, department);
