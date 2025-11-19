@@ -542,10 +542,10 @@ public class DatabaseUserServiceImpl implements DatabaseUserService {
             if (rs.next()) {
                 return rs.getInt(1);
             }
+            return 0;
         } catch (SQLException e) {
             throw new RuntimeException("Error al contar usuarios del departamento " + department, e);
         }
-        return 0;
     }
 
     // ========== HELPER METHODS ==========
